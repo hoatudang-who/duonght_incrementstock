@@ -35,9 +35,13 @@ class ProductStockHandler
      */
     public function incrementStock(Item $item)
     {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $productId = $this->orderInfo->getOrderProductId();
+        $product = $objectManager->get(\Magento\Catalog\Model\Product::class)->load($productId);
+        $sellerId = $product->getSellerId();
         $stockItem = $this->stockRegistry->getStockItemBySku($item->getSku());
         $stockItem->setQty($stockItem->getQty() + $item->getQty());
-        if ($this->orderInfo->getOrderPayment() != 'Check / Money order') {
+        if ($this->orderInfo->getOrderPayment() !== 'Check / Money order' && $sellerId !== 0) {
             $this->stockRegistry->updateStockItemBySku($item->getSku(), $stockItem);
         }
     }

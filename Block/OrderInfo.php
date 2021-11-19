@@ -2,6 +2,8 @@
 
 namespace Duonght\IncrementStock\Block;
 
+use Lof\MarketPlace\Block\Seller\Becomeseller;
+
 class OrderInfo extends \Magento\Framework\View\Element\Template
 {
     /**
@@ -37,6 +39,15 @@ class OrderInfo extends \Magento\Framework\View\Element\Template
         $this->checkoutSession = $checkoutSession;
         $this->lastOrder = $lastOrder;
         parent::__construct($context, $data);
+    }
+
+    /**
+     * @return OrderInfo
+     */
+    public function _prepareLayout()
+    {
+        $this->pageConfig->getTitle()->set(__('Order Information'));
+        return parent::_prepareLayout();
     }
 
     /**
@@ -83,14 +94,16 @@ class OrderInfo extends \Magento\Framework\View\Element\Template
 
     /**
      * @param $orderId
-     * @return float|void|null
+     * @return int|void|null
      */
-    public function getOrderQuantity($orderId)
+    public function getOrderProductId($orderId)
     {
         $order = $this->orderRepository->get($orderId);
         $orderItems = $order->getAllItems();
         foreach ($orderItems as $item) {
-            return $item->getQtyOrdered();
+            $productId = $item->getProductId();
         }
+
+        return $productId;
     }
 }
