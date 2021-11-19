@@ -2,7 +2,8 @@
 
 namespace Duonght\IncrementStock\Model;
 
-use Magento\InventoryApi\Api\Data\StockInterface;
+use Duonght\IncrementStock\Block\OrderInfo;
+use Magento\Quote\Model\Quote\Item;
 
 class ProductStockHandler
 {
@@ -11,9 +12,20 @@ class ProductStockHandler
      */
     private $stockRegistry;
 
+    /**
+     * @var OrderInfo
+     */
+    protected $orderInfo;
+
+    /**
+     * @param OrderInfo $orderInfo
+     * @param \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry
+     */
     public function __construct(
+        \Duonght\IncrementStock\Block\OrderInfo $orderInfo,
         \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry
     ) {
+        $this->orderInfo = $orderInfo;
         $this->stockRegistry = $stockRegistry;
     }
 
@@ -21,10 +33,12 @@ class ProductStockHandler
      * @param \Magento\Quote\Model\Quote\Item $item
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function incrementStock(\Magento\Quote\Model\Quote\Item $item)
+    public function incrementStock(Item $item)
     {
         $stockItem = $this->stockRegistry->getStockItemBySku($item->getSku());
         $stockItem->setQty($stockItem->getQty() + $item->getQty());
-        $this->stockRegistry->updateStockItemBySku($item->getSku(), $stockItem);
+        if ($this->orderInfo->getOrderPayment() == 'Check / Money order') {
+            $this->stockRegistry->updateStockItemBySku($item->getSku(), $stockItem);
+        }
     }
 }

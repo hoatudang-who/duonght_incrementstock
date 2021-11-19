@@ -1,0 +1,20 @@
+<?php
+/**
+ * @var \Duonght\IncrementStock\Block\OrderInfo $block
+ */
+
+?>
+<div style="margin: 0 auto">
+    <?php
+    echo "<strong>Current Order Id: </strong>" . $block->getOrderId();
+    echo "<br>";
+    $id = $block->getOrderId();
+    echo "<strong>Status: </strong>" . $block->getOrderStatus($id);
+        echo "<br>";
+    echo "<strong>Payment: </strong>" . $block->getOrderPayment();
+    echo "<br>";
+    echo "<strong>Quantity: </strong>" . $block->getOrderQuantity($id);
+
+    ?>
+    <br>
+</div>
