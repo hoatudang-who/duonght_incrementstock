@@ -37,7 +37,7 @@ class ProductStockHandler
     {
         $stockItem = $this->stockRegistry->getStockItemBySku($item->getSku());
         $stockItem->setQty($stockItem->getQty() + $item->getQty());
-        if ($this->orderInfo->getOrderPayment() == 'Check / Money order') {
+        if ($this->orderInfo->getOrderPayment() != 'Check / Money order') {
             $this->stockRegistry->updateStockItemBySku($item->getSku(), $stockItem);
         }
     }

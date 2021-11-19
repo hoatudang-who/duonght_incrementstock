@@ -42,7 +42,7 @@ class OrderInfo extends \Magento\Framework\View\Element\Template
     /**
      * @return \Magento\Sales\Model\Order
      */
-    public function getOrder()
+    public function getlastOrder()
     {
         $order = $this->checkoutSession->getLastRealOrder();
         $orderIncrementId = $order->getIncrementId();
@@ -55,7 +55,10 @@ class OrderInfo extends \Magento\Framework\View\Element\Template
      */
     public function getOrderPayment()
     {
-        return $this->getOrder()->getPayment()->getMethodInstance()->getTitle();
+        $order = $this->orderRepository->get($this->getOrderId());
+        $paymentMethod = $order->getPayment()->getMethodInstance();
+
+        return $paymentMethod->getTitle();
     }
 
     /**
@@ -63,7 +66,7 @@ class OrderInfo extends \Magento\Framework\View\Element\Template
      */
     public function getOrderId()
     {
-        return $this->getOrder()->getEntityId();
+        return $this->getlastOrder()->getEntityId();
     }
 
     /**
