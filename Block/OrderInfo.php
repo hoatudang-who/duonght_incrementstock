@@ -25,6 +25,7 @@ class OrderInfo extends \Magento\Framework\View\Element\Template
      * @param \Magento\Framework\View\Element\Template\Context $context
      * @param \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
      * @param \Magento\Checkout\Model\Session $checkoutSession
+     * @param \Magento\Catalog\Model\Product $productCollection
      * @param \Magento\Sales\Model\Order $lastOrder
      * @param array $data
      */
@@ -32,11 +33,13 @@ class OrderInfo extends \Magento\Framework\View\Element\Template
         \Magento\Framework\View\Element\Template\Context $context,
         \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
         \Magento\Checkout\Model\Session $checkoutSession,
+        \Magento\Catalog\Model\Product $productCollection,
         \Magento\Sales\Model\Order $lastOrder,
         array $data = []
     ) {
         $this->orderRepository = $orderRepository;
         $this->checkoutSession = $checkoutSession;
+        $this->productCollection = $productCollection;
         $this->lastOrder = $lastOrder;
         parent::__construct($context, $data);
     }
@@ -77,33 +80,60 @@ class OrderInfo extends \Magento\Framework\View\Element\Template
      */
     public function getOrderId()
     {
-        return $this->getlastOrder()->getEntityId();
+        $id = $this->getlastOrder()->getEntityId();
+        if ($id) {
+            return $id;
+        }
     }
 
     /**
-     * @param $orderId
      * @return string|null
      */
-    public function getOrderStatus($orderId)
+    public function getOrderStatus()
     {
-        $order = $this->orderRepository->get($orderId);
+        $order = $this->orderRepository->get($this->getOrderId());
 
         return $order->getStatus();
 
     }
 
     /**
-     * @param $orderId
-     * @return int|void|null
+     * @return int|null
      */
-    public function getOrderProductId($orderId)
+    public function getOrderProductId()
     {
-        $order = $this->orderRepository->get($orderId);
-        $orderItems = $order->getAllItems();
-        foreach ($orderItems as $item) {
+        foreach ($this->prepareProductInfo() as $item) {
             $productId = $item->getProductId();
         }
 
         return $productId;
+    }
+
+    public function getProductSku()
+    {
+        foreach ($this->prepareProductInfo() as $item) {
+            $productSku = $item->getSku();
+        }
+
+        return $productSku;
+    }
+
+    public function getProductQty()
+    {
+        foreach ($this->prepareProductInfo() as $item) {
+            $productQty = $item->getQtyOrdered();
+        }
+
+        return $productQty;
+    }
+
+    /**
+     * @return \Magento\Sales\Model\Order\Item[]
+     */
+    public function prepareProductInfo()
+    {
+        $order = $this->orderRepository->get($this->getOrderId());
+
+        return $order->getAllItems();
     }
 }

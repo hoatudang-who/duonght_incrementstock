@@ -2,6 +2,7 @@
 
 namespace Duonght\IncrementStock\Observer;
 
+use Duonght\IncrementStock\Block\OrderInfo;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Quote\Api\Data\CartInterface;
@@ -27,9 +28,11 @@ class OrderSaveAfter implements ObserverInterface
      */
     public function __construct(
         QuoteReader $quoteReaderProxy,
+        \Duonght\IncrementStock\Block\OrderInfo $orderInfo,
         \Duonght\IncrementStock\Model\ProductStockHandler $productStockHandler
     ) {
         $this->quoteReader = $quoteReaderProxy;
+        $this->orderInfo = $orderInfo;
         $this->productStockHandler = $productStockHandler;
     }
 
@@ -40,11 +43,12 @@ class OrderSaveAfter implements ObserverInterface
     {
         if ($this->quoteHasItems($observer)) {
             foreach ($this->getSimpleProductQuoteItems() as $item) {
-                try {
-                    $this->productStockHandler->incrementStock($item);
-                } catch (InvalidQuoteItem $e) {
-                    // possible log
-                }
+                    try {
+                        $this->productStockHandler->incrementStock($item);
+                    } catch
+                    (InvalidQuoteItem $e) {
+                        // possible log
+                    }
             }
         }
     }
