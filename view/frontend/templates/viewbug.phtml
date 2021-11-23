@@ -9,12 +9,21 @@
     echo "<strong>Current Order Id: </strong>" . $block->getOrderId();
     echo "<br>";
     $id = $block->getOrderId();
-    echo "<strong>Status: </strong>" . $block->getOrderStatus($id);
+    if ($id) {
+        echo "<strong>Status: </strong>" . $block->getOrderStatus();
         echo "<br>";
-    echo "<strong>Payment: </strong>" . $block->getOrderPayment();
-    echo "<br>";
-    echo "<strong>Quantity: </strong>" . $block->getOrderQuantity($id);
-
+        echo "<strong>Payment: </strong>" . $block->getOrderPayment();
+        echo "<br>";
+        echo "<strong>Produc Id: </strong>" . $block->getOrderProductId();
+        echo "<br>";
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $productId     = $block->getOrderProductId();
+        $product       = $objectManager->get(\Magento\Catalog\Model\Product::class)->load($productId);
+        $sellerId      = $product->getSellerId();
+        echo $block->getProductSku();
+        echo "<br>";
+        echo $block->getProductQty();
+    }
     ?>
     <br>
 </div>
